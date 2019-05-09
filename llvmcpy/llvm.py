@@ -41,11 +41,13 @@ def find_program(env_variable, names):
                        + " ".join(names))
 
 def is_llvm_type(name):
-    return name.startswith("struct LLVM")
+    return name.startswith("struct LLVM") or name.startswith("LLVM")
 
 def remove_llvm_prefix(name):
     assert is_llvm_type(name)
-    name = name[len("struct LLVM"):]
+    if name.startswith("struct "):
+        name = name[len("struct "):]
+    name = name[len("LLVM"):]
     if name.startswith("Opaque"):
         name = name[len("Opaque"):]
     return name
@@ -360,7 +362,9 @@ def create_function(library, name, prototype,
                                                       name[4:]))
     return result
 
-header_blacklist = ["llvm/Support/DataTypes.h",
+header_blacklist = ["inttypes.h",
+                    "llvm/Support/DataTypes.h",
+                    "math.h",
                     "stddef.h",
                     "sys/types.h",
                     "stdbool.h"]
